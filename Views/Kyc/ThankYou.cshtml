@@ -1,0 +1,641 @@
+﻿@* @model string
+
+@{
+    ViewData["Title"] = "KYC Approved";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --text-color: #333;
+        --light-bg: #f9f9f9;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+    }
+
+    .thankyou-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .logo {
+        margin-bottom: 2rem;
+    }
+
+        .logo img {
+            height: 130px;
+            width: auto;
+            border-radius: 8px;
+        }
+            .logo img:hover {
+                transform: scale(1.05); 
+            }
+
+    .thankyou-box {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-width: 550px;
+        width: 100%;
+        animation: fadeInUp 0.6s ease-in-out;
+    }
+
+        .thankyou-box h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .thankyou-box p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+    .kyc-id-box {
+        background-color: #fff4f5;
+        border: 1px solid var(--primary-light);
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        font-size: 1.2rem;
+        color: var(--primary-dark);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .copy-icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--primary-color);
+        font-size: 1.4rem;
+        transition: transform 0.2s ease;
+    }
+
+        .copy-icon-btn:hover {
+            transform: scale(1.2);
+            color: var(--primary-dark);
+        }
+
+    .illustration {
+        max-width: 400px;
+        margin-top: 2rem;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@media (max-width: 600px) {
+        .thankyou-box
+
+    {
+        padding: 2rem;
+    }
+
+    .kyc-id-box {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+        .kyc-id-box span {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+</style>
+
+<div class="thankyou-container">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="/images/infiniotaRed.png" alt="KYC Logo">
+    </div>
+
+    <!-- Box -->
+    <div class="thankyou-box">
+        <h2>🎯 Thank You!</h2>
+        <p>Your KYC has been <strong>successfully verified</strong> and approved.</p>
+
+        <div class="kyc-id-box">
+            <span id="kycId">KYC ID: <strong>@Model</strong></span>
+            <button class="copy-icon-btn" onclick="copyKycId()" title="Copy KYC ID">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+
+        <p>We appreciate your time and trust. You can now continue to access all services securely.</p>
+    </div>
+
+    <!-- Illustration -->
+    <img class="illustration" src="/images/KYCCompleted.png" alt="KYC Illustration">
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- JS -->
+<script>
+    function copyKycId() {
+        const text = document.getElementById("kycId").innerText.replace('KYC ID: ', '');
+        navigator.clipboard.writeText(text).then(() => {
+            const icon = document.querySelector('.copy-icon-btn i');
+            icon.classList.replace('fa-copy', 'fa-check');
+            setTimeout(() => {
+                icon.classList.replace('fa-check', 'fa-copy');
+            }, 2000);
+        });
+    }
+</script>
+ *@
+
+
+@model string
+
+@{
+    ViewData["Title"] = "KYC Approved";
+    Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Context.Response.Headers["Pragma"] = "no-cache";
+    Context.Response.Headers["Expires"] = "0";
+
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --text-color: #333;
+        --light-bg: #f9f9f9;
+        --success-color: #28a745;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    body {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background-color: var(--light-bg);
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+    }
+
+    .thankyou-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, #f9f9f9 0%, #fff 100%);
+    }
+
+    .logo {
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+        .logo img {
+            height: 120px;
+            width: auto;
+            border-radius: 12px;
+            /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); */
+            transition: var(--transition);
+        }
+
+        .logo:hover img {
+            transform: translateY(-5px) scale(1.03);
+            /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); */
+        }
+
+    .thankyou-box {
+        background-color: white;
+        padding: 3rem;
+        border-radius: 16px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+        max-width: 600px;
+        width: 100%;
+        animation: fadeInUp 0.6s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+        .thankyou-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        }
+
+        .thankyou-box h2 {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .thankyou-box p {
+            font-size: 1.15rem;
+            margin-bottom: 1.8rem;
+            color: #555;
+        }
+
+    .kyc-id-box {
+        background-color: #fff4f5;
+        border: 1px solid var(--primary-light);
+        border-radius: 12px;
+        padding: 1.2rem 1.8rem;
+        font-size: 1.2rem;
+        color: var(--primary-dark);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2rem 0;
+        transition: var(--transition);
+        position: relative;
+    }
+
+        .kyc-id-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(172, 12, 20, 0.1);
+        }
+
+    .copy-icon-btn {
+        background: rgba(172, 12, 20, 0.1);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        padding: 0.5rem;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+
+        .copy-icon-btn:hover {
+            background: rgba(172, 12, 20, 0.2);
+            transform: scale(1.1);
+        }
+
+        .copy-icon-btn:active {
+            transform: scale(0.95);
+        }
+
+    .success-icon {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        background-color: rgba(40, 167, 69, 0.1);
+        border-radius: 50%;
+        margin-bottom: 1.5rem;
+        position: relative;
+        animation: scaleIn 0.5s ease-out;
+    }
+
+        .success-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+        }
+
+        .success-icon::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: white;
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+    .illustration {
+        max-width: 380px;
+        margin: 2.5rem 0 0;
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    }
+
+    .logout-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed #ddd;
+    }
+
+    .logout-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        color: #555;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            color: #333;
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes scaleIn {
+        0%
+
+    {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    80% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    @@media (max-width: 640px) {
+        .thankyou-box
+
+    {
+        padding: 2rem 1.5rem;
+    }
+
+    .thankyou-box h2 {
+        font-size: 1.8rem;
+    }
+
+    .kyc-id-box {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem;
+    }
+
+    .illustration {
+        max-width: 280px;
+    }
+
+    .success-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+        .success-icon::before {
+            width: 40px;
+            height: 40px;
+        }
+
+        .success-icon::after {
+            font-size: 20px;
+        }
+
+    }
+</style>
+
+<div class="thankyou-container">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="/images/infiniotaRed.png" alt="Company Logo">
+    </div>
+
+    <!-- Main Content Box -->
+    <div class="thankyou-box">
+        <!-- Animated Success Icon -->
+        <div class="success-icon"></div>
+
+        <h2>KYC Verification Complete!</h2>
+        <p>Your KYC ID has been <strong>successfully verified</strong> and your account is now fully activated.</p>
+
+        <!-- KYC ID Box -->
+        <div class="kyc-id-box">
+            <span id="kycId">KYC Reference: <strong>@Model</strong></span>
+            <button class="copy-icon-btn" onclick="copyKycId()" title="Copy KYC ID">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+
+        <p>Thank you for completing this important step. Your security is our priority.</p>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+            <form method="post" asp-controller="Account" asp-action="Logout">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Illustration -->
+    <img class="illustration" src="/images/KYCCompleted.png" alt="Verification Complete">
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Google Fonts - Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- JS -->
+<script>
+    // Enhanced copy function with error handling
+    function copyKycId() {
+        const text = document.getElementById("kycId").innerText.replace('KYC Reference: ', '');
+        const icon = document.querySelector('.copy-icon-btn i');
+        const btn = document.querySelector('.copy-icon-btn');
+
+        navigator.clipboard.writeText(text).then(() => {
+            // Success feedback
+            icon.classList.replace('fa-copy', 'fa-check');
+            btn.style.backgroundColor = 'rgba(40, 167, 69, 0.2)';
+            btn.style.color = 'var(--success-color)';
+
+            // Reset after 2 seconds
+            setTimeout(() => {
+                icon.classList.replace('fa-check', 'fa-copy');
+                btn.style.backgroundColor = 'rgba(172, 12, 20, 0.1)';
+                btn.style.color = 'var(--primary-color)';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            // Fallback for browsers without clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                // Show success feedback even with fallback
+                icon.classList.replace('fa-copy', 'fa-check');
+                btn.style.backgroundColor = 'rgba(40, 167, 69, 0.2)';
+                btn.style.color = 'var(--success-color)';
+                setTimeout(() => {
+                    icon.classList.replace('fa-check', 'fa-copy');
+                    btn.style.backgroundColor = 'rgba(172, 12, 20, 0.1)';
+                    btn.style.color = 'var(--primary-color)';
+                }, 2000);
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                alert('Failed to copy KYC ID. Please manually select and copy.');
+            }
+            document.body.removeChild(textArea);
+        });
+    }
+
+    // Nuclear back-button prevention with multiple safeguards
+    (function() {
+        // Initial state push
+        window.history.pushState(null, '', window.location.href);
+
+        // Block back/forward navigation
+        window.addEventListener('popstate', function(event) {
+            // Extra protection - check if we're still on the same page
+            if (window.location.pathname.toLowerCase().includes('kycapproved')) {
+                window.history.pushState(null, '', window.location.href);
+                // Force redirect after a very short delay to ensure state is pushed
+                setTimeout(() => {
+                    window.location.replace('/Account/Login');
+                }, 50);
+            }
+        });
+
+        // Detect page load from cache (bfcache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Immediate redirect if page was restored from cache
+                window.location.replace('/Account/Login');
+            }
+        });
+
+        // Additional protection against forward button
+        window.addEventListener('beforeunload', function() {
+            window.history.pushState(null, '', window.location.href);
+        });
+
+        // Prevent form resubmission
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Extra protection for keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Block Alt+Left arrow (common back shortcut)
+            if (e.altKey && e.keyCode === 37) {
+                e.preventDefault();
+                window.location.replace('/Account/Login');
+            }
+            // Block Backspace key navigation (except in form fields)
+            if (e.key === 'Backspace' &&
+                !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+            }
+        });
+    })();
+</script>

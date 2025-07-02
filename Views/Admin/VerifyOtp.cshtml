@@ -1,0 +1,342 @@
+﻿@model KYCIDGenerator.Models.OtpVerificationViewModel
+@{
+    ViewData["Title"] = "Admin OTP Verification";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-dark: #900b10;
+        --secondary-color: #f8f9fa;
+        --text-color: #333;
+        --light-gray: #e9ecef;
+        --border-radius: 8px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .otp-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 40px;
+    }
+
+    .logo-img {
+        max-width: 180px;
+    }
+
+    .otp-title {
+        font-size: 28px;
+        margin-bottom: 30px;
+        color: var(--text-color);
+        font-weight: 600;
+    }
+
+    .otp-inputs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+
+    .otp-input {
+        width: 50px;
+        height: 60px;
+        text-align: center;
+        font-size: 24px;
+        border: 2px solid var(--light-gray);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+    }
+
+        .otp-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(172, 12, 20, 0.2);
+        }
+
+    .submit-btn {
+        width: 100%;
+        max-width: 300px;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: var(--border-radius);
+        margin: 20px auto;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    .resend-container {
+        margin: 20px 0 40px;
+        color: #666;
+    }
+
+    .resend-btn {
+        color: var(--primary-color);
+        background: none;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+        .resend-btn:hover {
+            color: var(--primary-dark);
+        }
+
+    /* Message styles */
+    .message-container {
+        margin: 15px auto;
+        max-width: 300px;
+        text-align: center;
+        font-size: 14px;
+        border-radius: var(--border-radius);
+        padding: 12px;
+        display: none;
+    }
+
+    .error-message {
+        color: #d9534f;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+    }
+
+    .success-message {
+        color: #155724;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+    }
+
+    .shake-animation {
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+
+        20%, 60% {
+            transform: translateX(-5px);
+        }
+
+        40%, 80% {
+            transform: translateX(5px);
+        }
+    }
+</style>
+
+<div class="otp-container">
+    <div class="logo-container">
+        <img src="~/images/infiniotaRed.png" alt="Logo" class="logo-img" />
+    </div>
+
+    <h1 class="otp-title">Admin OTP Verification</h1>
+
+    <!-- Message containers - Only one will be shown at a time -->
+    <div id="errorMessage" class="message-container error-message" style="display: none;">
+        Invalid OTP entered. Please try again.
+    </div>
+
+    <div id="successMessage" class="message-container success-message" style="display: none;">
+        New OTP has been sent to your registered number
+    </div>
+
+    <form asp-action="VerifyOtp" method="post">
+        <input type="hidden" asp-for="Mobile" />
+        <input type="hidden" id="remainingTimeHolder" value="@(TempData["RemainingTime"] ?? 30)" />
+
+        <div class="otp-inputs">
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[0]" autocomplete="off" />
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[1]" autocomplete="off" />
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[2]" autocomplete="off" />
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[3]" autocomplete="off" />
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[4]" autocomplete="off" />
+            <input type="text" maxlength="1" class="otp-input" name="OtpDigits[5]" autocomplete="off" />
+            <input type="hidden" asp-for="Otp" id="fullOtp" />
+        </div>
+
+        <button type="submit" class="submit-btn">Verify OTP</button>
+
+        <div class="resend-container">
+            <span id="timer">Resend available in 30s</span>
+            <button id="resendBtn" class="resend-btn" style="display:none;" type="button" onclick="resendOtp()">Resend OTP</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // Persistent timer using sessionStorage
+        function initializeTimer() {
+            const timerSpan = document.getElementById("timer");
+            const resendBtn = document.getElementById("resendBtn");
+            const storageKey = "otpTimer_@(TempData["AdminMobile"]?.ToString())";
+
+            // Get remaining time from storage or server value or default to 30
+            let remainingTime = sessionStorage.getItem(storageKey);
+            if (remainingTime === null) {
+                remainingTime = document.getElementById("remainingTimeHolder").value || 30;
+                sessionStorage.setItem(storageKey, remainingTime);
+            }
+            remainingTime = parseInt(remainingTime);
+
+            // Clear any existing interval
+            if (window.timerInterval) {
+                clearInterval(window.timerInterval);
+            }
+
+            function updateTimerDisplay() {
+                if (remainingTime > 0) {
+                    timerSpan.style.display = "inline";
+                    resendBtn.style.display = "none";
+                    timerSpan.textContent = `Resend available in ${remainingTime}s`;
+                } else {
+                    timerSpan.style.display = "none";
+                    resendBtn.style.display = "inline";
+                }
+            }
+
+            updateTimerDisplay();
+
+            window.timerInterval = setInterval(() => {
+                remainingTime--;
+                sessionStorage.setItem(storageKey, remainingTime);
+                updateTimerDisplay();
+
+                if (remainingTime <= 0) {
+                    clearInterval(window.timerInterval);
+                }
+            }, 1000);
+        }
+
+        // Resend OTP function
+        async function resendOtp() {
+            try {
+                const response = await fetch('/Admin/ResendOtp', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (response.ok) {
+                    // Reset timer to 30 seconds
+                    const storageKey = "otpTimer_@(TempData["AdminMobile"]?.ToString())";
+                    sessionStorage.setItem(storageKey, 30);
+
+                    // Show success message
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 5000);
+
+                    // Reinitialize timer
+                    initializeTimer();
+                } else {
+                    alert('Failed to resend OTP. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while resending OTP.');
+            }
+        }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeTimer();
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const otpInputs = document.querySelectorAll('.otp-input');
+
+            // Check for OTP verification error
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <text>
+                    errorMessage.style.display = 'block';
+                    otpInputs.forEach(input => {
+                        input.classList.add('shake-animation');
+                    });
+
+                    setTimeout(() => {
+                        otpInputs.forEach(input => {
+                            input.classList.remove('shake-animation');
+                        });
+                    }, 500);
+            </text>
+        }
+
+            // Check for resend success message
+        @if (TempData["ResendSuccess"] != null)
+        {
+            <text>
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 5000);
+            </text>
+        }
+
+            // Clear inputs and focus first field when error is shown
+            if (errorMessage.style.display === 'block') {
+                otpInputs.forEach(input => {
+                    input.value = '';
+                });
+                otpInputs[0].focus();
+            }
+        });
+
+        // OTP input handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const fullOtpField = document.getElementById('fullOtp');
+
+        otpInputs.forEach((input, index) => {
+            // Focus next input when current is filled
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                updateFullOtp();
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            // Prevent paste
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+            });
+        });
+
+        function updateFullOtp() {
+            fullOtpField.value = Array.from(otpInputs).map(input => input.value).join('');
+        }
+    </script>
+}

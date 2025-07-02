@@ -1,0 +1,175 @@
+﻿@model string
+@{
+    ViewData["Title"] = "KYC Rejected";
+    var rejectionReason = ViewBag.RejectionReason as string ?? "Reason not specified.";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --danger-color: #dc3545;
+        --light-danger: #ffe8e8;
+        --warning-color: #ffc107;
+        --text-color: #333;
+        --light-bg: #f9f9f9;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+    }
+
+    .rejected-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .logo {
+        margin-bottom: 2rem;
+    }
+
+        .logo img {
+            height: 130px;
+            width: auto;
+            border-radius: 8px;
+        }
+
+            .logo img:hover {
+                transform: scale(1.05);
+            }
+
+    .rejected-box {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        animation: fadeInUp 0.6s ease-in-out;
+        border-left: 6px solid var(--danger-color);
+    }
+
+        .rejected-box h2 {
+            font-size: 2rem;
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+
+        .rejected-box p {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+        }
+
+    .rejected-reason {
+        background-color: var(--light-danger);
+        border: 1px solid var(--danger-color);
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        font-weight: 500;
+        color: var(--danger-color);
+    }
+
+    .rejected-box .btn-warning {
+        margin-top: 1.5rem;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        border: none;
+        color: black;
+        background-color: var(--warning-color);
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .rejected-box .btn-warning:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+
+    .illustration {
+        max-width: 340px;
+        margin-top: 2.5rem;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@media (max-width: 600px) {
+        .rejected-box
+
+    {
+        padding: 2rem;
+    }
+
+    }
+</style>
+
+<div class="rejected-container">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="/images/infiniotaRed.png" alt="Logo" />
+    </div>
+
+    <!-- Box -->
+    <div class="rejected-box">
+        <h2>❌ KYC Application Rejected</h2>
+        <p>Unfortunately, your KYC submission with ID <strong>@Model</strong> did not pass our verification process.</p>
+
+        <p>We understand this can be disappointing. To help you move forward, we’ve included the reason for rejection below.</p>
+
+        <div class="rejected-reason">
+            <strong>Reason for Rejection:</strong> @rejectionReason
+        </div>
+
+        <p class="mt-3">You may revise your details and try again by submitting a new KYC request.</p>
+
+        <a class="btn btn-warning" asp-action="Home">
+            <i class="fas fa-redo-alt"></i> Start a New KYC
+        </a>
+    </div>
+
+    <!-- Illustration -->
+    <img class="illustration" src="/images/KYCRejected.png" alt="KYC Rejected Illustration">
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

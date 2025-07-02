@@ -1,0 +1,233 @@
+﻿@model KYCIDGenerator.Models.KycRejectionViewModel
+@{
+    ViewData["Title"] = "Reject KYC Application";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f8f9fa;
+        --danger-color: #dc3545;
+        --dark-color: #212529;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+        min-height: 100vh;
+    }
+
+    .rejection-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        padding: 2rem;
+    }
+
+    .rejection-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+        .rejection-header h2 {
+            color: var(--danger-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+            .rejection-header h2::before {
+                content: "";
+                display: inline-block;
+                width: 8px;
+                height: 30px;
+                background: var(--danger-color);
+                margin-right: 12px;
+                border-radius: 4px;
+            }
+
+    .kyc-id-badge {
+        background-color: var(--light-gray);
+        color: var(--dark-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-left: 12px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select, .form-control {
+        border-radius: 8px;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(172, 12, 20, 0.15);
+        }
+
+    .btn-reject {
+        background: var(--danger-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+        .btn-reject:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
+        }
+
+    .reason-options {
+        margin-bottom: 2rem;
+    }
+
+    .custom-reason {
+        margin-top: 2rem;
+    }
+
+    .warning-note {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left: 4px solid var(--danger-color);
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .rejection-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .rejection-header h2 {
+            font-size: 1.5rem;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .kyc-id-badge {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
+    }
+
+    .required-star {
+        color: red;
+        font-weight: bold;
+        display: none;
+    }
+
+        .required-star.show {
+            display: inline;
+        }
+</style>
+
+<div class="rejection-container">
+    <div class="rejection-header">
+        <h2>
+            Reject KYC Application
+            <span class="kyc-id-badge">ID: @Model.KycId</span>
+        </h2>
+    </div>
+
+    <div class="warning-note">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Warning:</strong> This action cannot be undone. Please provide a clear reason for rejection.
+    </div>
+
+    <form method="post" asp-action="RejectKycReason">
+        <input type="hidden" asp-for="KycId" />
+
+        <div class="reason-options">
+            <label for="SelectedReason" class="form-label">Select a reason for rejection:</label>
+            <select asp-for="SelectedReason" class="form-select" id="reasonDropdown" required>
+                <option value="">-- Select a reason --</option>
+                <option value="Document is unclear or blurry">Document is unclear or blurry</option>
+                <option value="Document is expired or invalid">Document is expired or invalid</option>
+                <option value="Mismatch in provided details and document">Mismatch in provided details and document</option>
+                <option value="Incomplete or missing information">Incomplete or missing information</option>
+                <option value="Document not supported">Document not supported</option>
+                <option value="Duplicate KYC submission">Duplicate KYC submission</option>
+                <option value="Other">Other (specify below)</option>
+            </select>
+        </div>
+
+        <div class="custom-reason">
+            <label for="CustomReason" class="form-label">
+                Additional comments <span id="comment-required-label" class="required-star">*</span>
+            </label>
+            <textarea asp-for="CustomReason" class="form-control" id="customReasonField" rows="4"
+                      placeholder="Provide additional details about the rejection reason"></textarea>
+            <small class="text-muted">Maximum 500 characters</small>
+        </div>
+
+        <button type="submit" class="btn-reject">
+            <i class="fas fa-ban me-2"></i> Confirm Rejection
+        </button>
+    </form>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const reasonDropdown = document.getElementById("reasonDropdown");
+        const customReasonField = document.getElementById("customReasonField");
+        const form = document.querySelector("form");
+        const commentRequiredLabel = document.getElementById("comment-required-label");
+
+        function updateCustomReasonRequirement() {
+            const selected = reasonDropdown.value;
+            const isOther = selected === "Other";
+
+            if (isOther) {
+                customReasonField.setAttribute("required", "required");
+                commentRequiredLabel.classList.add("show");
+                customReasonField.placeholder = "This field is required when selecting 'Other'";
+            } else {
+                customReasonField.removeAttribute("required");
+                commentRequiredLabel.classList.remove("show");
+                customReasonField.placeholder = "Provide additional details about the rejection reason";
+            }
+        }
+
+        reasonDropdown.addEventListener("change", updateCustomReasonRequirement);
+
+        form.addEventListener("submit", function (e) {
+            updateCustomReasonRequirement(); // Ensure latest value is reflected
+
+            if (reasonDropdown.value === "Other" && customReasonField.value.trim() === "") {
+                alert("Please provide additional comments when selecting 'Other' as the reason.");
+                customReasonField.focus();
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+

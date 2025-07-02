@@ -1,0 +1,430 @@
+﻿@model KYCIDGenerator.Models.KycDetailsViewModel
+@{
+    ViewData["Title"] = "KYC Verification Portal";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f8f9fa;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --dark-color: #212529;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+        min-height: 100vh;
+    }
+
+    .kyc-portal {
+        max-width: 1200px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    /* Header - Verification Pass */
+    .kyc-pass {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .kyc-pass::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .kyc-pass::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+    .kyc-pass-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .kyc-id {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .kyc-status {
+        background: white;
+        color: var(--dark-color);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .applicant-name {
+        font-size: 2.2rem;
+        font-weight: 300;
+        margin-bottom: 0.5rem;
+        word-break: break-word;
+    }
+
+    .applicant-type {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Details Section */
+    .kyc-details {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border-left: 4px solid var(--primary-color);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .detail-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .detail-card h3 {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-card p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+            word-break: break-word;
+        }
+
+    .document-card {
+        grid-column: 1 / -1;
+        background: var(--light-gray);
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .document-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1rem;
+    }
+
+    .document-text {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    /* Action Panel */
+    .action-panel {
+        background: var(--light-gray);
+        padding: 2rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .nav-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-approve {
+        background: var(--success-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        white-space: nowrap;
+    }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(40, 167, 69, 0.3);
+        }
+
+    .btn-reject {
+        background: var(--danger-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        white-space: nowrap;
+    }
+
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
+        }
+
+    .btn-secondary {
+        background: white;
+        color: var(--dark-color);
+        border: 1px solid #ddd;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+        .btn-secondary:hover {
+            background: #f1f1f1;
+        }
+
+    .btn-download {
+        background: var(--primary-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        white-space: nowrap;
+        margin-top: 1rem;
+        align-self: flex-start;
+    }
+
+        .btn-download:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    .status-message {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        font-weight: 500;
+        flex: 1;
+        min-width: 100%;
+    }
+
+        .status-message strong {
+            color: var(--primary-color);
+        }
+
+    /* Alert */
+    .alert-success {
+        margin: 1.5rem;
+        border-radius: 8px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .kyc-details {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .kyc-pass {
+            padding: 1.5rem;
+        }
+
+        .applicant-name {
+            font-size: 1.8rem;
+        }
+
+        .kyc-details {
+            grid-template-columns: 1fr;
+            padding: 1.5rem;
+        }
+
+        .action-panel {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .action-buttons, .nav-buttons {
+            width: 100%;
+        }
+
+        .btn-approve, .btn-reject, .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+
+        .document-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .btn-download {
+            align-self: stretch;
+            text-align: center;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .kyc-pass-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .kyc-id {
+            font-size: 1.5rem;
+        }
+
+        .applicant-name {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+<div class="kyc-portal">
+    <!-- Verification Pass Header -->
+    <div class="kyc-pass">
+        <div class="kyc-pass-header">
+            <div class="kyc-id">KYC# @Model.Kyc.KYC_ID</div>
+            <div class="kyc-status">@Model.Kyc.KYC_Status</div>
+        </div>
+
+        <h1 class="applicant-name">@Model.Kyc.Name</h1>
+        <span class="applicant-type">@Model.Kyc.CustomerType Customer</span>
+    </div>
+
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["StatusMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Details Grid -->
+    <div class="kyc-details">
+        <div class="detail-card">
+            <h3>Contact Information</h3>
+            <p><strong>Mobile:</strong> @Model.Kyc.Mobile</p>
+            <p><strong>Email:</strong> @Model.Kyc.Email</p>
+        </div>
+
+        <div class="detail-card">
+            <h3>Address</h3>
+            <p>@Model.Kyc.Address1 @Model.Kyc.Address2</p>
+            <p>@Model.Kyc.City, @Model.Kyc.State</p>
+            <p>@Model.Kyc.Pin_Code</p>
+        </div>
+
+        <div class="detail-card">
+            <h3>Verification Timeline</h3>
+            <p><strong>Created:</strong> @Model.Kyc.CreatedDate.ToString("dd-MMM-yyyy")</p>
+            <p><strong>Last Updated:</strong> @(Model.Kyc.StatusModifiedDate?.ToString("dd-MMM-yyyy") ?? "N/A")</p>
+        </div>
+
+        @if (Model.DocumentName != null)
+        {
+            <div class="detail-card document-card">
+                <h3>Submitted Document</h3>
+                <div class="document-info">
+                    <div class="document-text">
+                        <p><strong>Document Type:</strong> @Model.DocumentName</p>
+                    </div>
+                    <a class="btn-download" href="@Model.UploadedFilePath" download target="_blank">
+                        <i class="fas fa-download me-2"></i>Download Document
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Action Panel -->
+    <div class="action-panel">
+        @if (!Model.IsApproved)
+        {
+            <div class="action-buttons">
+                <form method="post" asp-action="ApproveKyc" class="d-inline">
+                    <input type="hidden" name="kycId" value="@Model.Kyc.KYC_ID" />
+                    <button class="btn-approve">
+                        <i class="fas fa-check-circle me-2"></i>Approve Verification
+                    </button>
+                </form>
+                <a asp-action="RejectKycReason" asp-route-kycId="@Model.Kyc.KYC_ID" class="btn-reject">
+                    <i class="fas fa-times-circle me-2"></i>Reject Application
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="status-message">
+                This KYC verification has already been <strong>@Model.Kyc.KYC_Status</strong>.
+            </div>
+        }
+
+        <div class="nav-buttons">
+            <a class="btn-secondary" asp-action="Dashboard">
+                <i class="fas fa-home me-2"></i>Dashboard
+            </a>
+            <a class="btn-secondary" asp-action="ViewPending">
+                <i class="fas fa-list me-2"></i>Pending Queue
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

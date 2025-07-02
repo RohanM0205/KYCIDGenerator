@@ -1,0 +1,343 @@
+﻿@model KYCIDGenerator.Models.KycHomeViewModel
+
+@{
+    ViewData["Title"] = "KYC Home";
+}
+
+<!-- Custom CSS -->
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --secondary-color: #f8f9fa;
+        --text-color: #333;
+        --light-gray: #e9ecef;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+    }
+
+    .container-wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .content-section {
+        flex: 1;
+        padding: 2rem;
+        max-width: 50%;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .top-area {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo img {
+        height: 90px;
+        width: auto;
+        border-radius: 8px;
+    }
+
+        .logo img:hover {
+            transform: scale(1.05); /* subtle hover zoom for interactivity */
+        }
+
+
+    .headline {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        animation: pulse 2s infinite;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    }
+
+    .search-container {
+        position: relative;
+        width: 80%;
+        margin-bottom: 2rem;
+    }
+
+        .search-container input {
+            padding-right: 40px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: 45px;
+            width: 100%;
+        }
+
+    .search-button {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    .radio-toggle-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+        .radio-toggle-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-toggle-group label {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .radio-toggle-group input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .message-box {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .add-btn-wrapper {
+        margin-top: auto;
+        margin-bottom: 1rem;
+    }
+
+    .btn-success {
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: 600;
+        border: none;
+        background-color: #28a745;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+    .illustration-section {
+        flex: 1;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .illustration {
+        width: 80%;
+        max-width: 500px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .container-wrapper
+
+    {
+        flex-direction: column;
+    }
+
+    .content-section, .illustration-section {
+        max-width: 100%;
+    }
+
+    }
+
+    body::after {
+        content: "";
+        display: block;
+        height: 80px;
+    }
+
+    .custom-error-box {
+        background-color: #ffe5e7;
+        border: 1px solid #e49a9e;
+        color: #ac0c14;
+        font-weight: 500;
+        text-align: center;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin: 1.5rem auto;
+        max-width: 340px;
+        box-shadow: 0 4px 12px rgba(172, 12, 20, 0.1);
+        animation: fadeIn 0.5s ease-in-out;
+        opacity: 1; /* required for smooth fade-out */
+    }
+
+
+    @@keyframes fadeIn {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+
+<div class="container-wrapper">
+    <div class="content-section">
+        <div class="top-area">
+            <!-- Logo -->
+            <div class="logo">
+                <img src="/images/infiniotaRed.png" alt="KYC Logo" />
+            </div>
+
+            <!-- Headline -->
+            <div class="headline">KYC Has Never Been This Easy!</div>
+
+            <!-- Search -->
+            <form asp-action="SearchKyc" method="post" class="search-container">
+                <input asp-for="KycIdSearch" class="form-control" placeholder="Enter KYC ID to search..." />
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <!-- KYC Type Selection -->
+            <form method="post" asp-action="SelectKycType">
+                <div class="radio-toggle-group">
+                    <input type="radio" id="individual" name="KycType" value="Individual" @(Model.KycType == "Individual" ? "checked" : "") onchange="this.form.submit()" />
+                    <label for="individual"><i class="fas fa-user"></i> Individual</label>
+
+                    <input type="radio" id="corporate" name="KycType" value="Corporate" @(Model.KycType == "Corporate" ? "checked" : "") onchange="this.form.submit()" />
+                    <label for="corporate"><i class="fas fa-building"></i> Corporate</label>
+                </div>
+            </form>
+
+            <!-- Error Message -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="custom-error-box">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+
+        </div>
+
+        <!-- Add New Button (Bottom Centered) -->
+        <div class="add-btn-wrapper">
+            @if (Model.KycType == "Corporate")
+            {
+                <a class="btn btn-success" asp-controller="Kyc" asp-action="AddCorporate">
+                    <i class="fas fa-building"></i> Add New Corporate KYC
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success" asp-controller="Kyc" asp-action="AddIndividual">
+                    <i class="fas fa-user"></i> Add New Individual KYC
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Right Side Illustration -->
+    <div class="illustration-section">
+        <img class="illustration" src="/images/header_11.png" alt="KYC Illustration">
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        const box = document.querySelector('.custom-error-box');
+        if (box) {
+            box.style.transition = 'opacity 0.5s ease';
+            box.style.opacity = '0';
+            setTimeout(() => box.remove(), 450); // remove from DOM after fade out
+        }
+    }, 5000); // 5 seconds
+</script>
+
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+
+
+
+

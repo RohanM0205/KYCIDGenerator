@@ -1,0 +1,210 @@
+﻿@{
+    ViewData["Title"] = "KYC Rejection Confirmed";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f8f9fa;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --dark-color: #212529;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
+        padding: 3rem 1rem;
+    }
+
+    .rejection-confirmation {
+        max-width: 600px;
+        width: 100%;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        text-align: center;
+        padding: 3rem;
+        position: relative;
+    }
+
+    .rejection-icon {
+        font-size: 5rem;
+        color: var(--danger-color);
+        margin-bottom: 1.5rem;
+        animation: bounce 1s ease infinite alternate;
+    }
+
+    .rejection-title {
+        color: var(--danger-color);
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .rejection-message {
+        font-size: 1.1rem;
+        color: var(--dark-color);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-dashboard {
+        background: var(--primary-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-dashboard:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    .btn-pending {
+        background: white;
+        color: var(--primary-color);
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: 2px solid var(--primary-color);
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-pending:hover {
+            background: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+    .alert-success {
+        border-left: 4px solid var(--success-color);
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: left;
+        padding: 1rem;
+        background: #e9f7ef;
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: var(--danger-color);
+        opacity: 0.6;
+    }
+
+    @@keyframes bounce {
+        0%
+
+    {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-15px);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .rejection-confirmation
+
+    {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+
+    .rejection-title {
+        font-size: 1.8rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-dashboard, .btn-pending {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>
+
+<div class="wrapper">
+    <div class="rejection-confirmation">
+        <!-- Animated rejection icon -->
+        <div class="rejection-icon">
+            <i class="fas fa-times-circle"></i>
+        </div>
+
+        <h1 class="rejection-title">KYC Rejected Successfully</h1>
+
+        <p class="rejection-message">
+            The KYC application has been officially rejected and the applicant has been notified.
+            <br>All relevant records have been updated in the system.
+        </p>
+
+        @if (TempData["RejectedMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                @TempData["RejectedMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="action-buttons">
+            <a class="btn-dashboard" asp-action="Dashboard">
+                <i class="fas fa-home me-2"></i> Back to Dashboard
+            </a>
+            <a class="btn-pending" asp-action="ViewPending">
+                <i class="fas fa-list me-2"></i> Pending KYCs
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Simple confetti effect
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.querySelector('.rejection-confirmation');
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = Math.random() * 100 + '%';
+            confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+            confetti.style.width = Math.random() * 8 + 5 + 'px';
+            confetti.style.height = Math.random() * 8 + 5 + 'px';
+            confetti.style.opacity = Math.random() * 0.5 + 0.1;
+            container.appendChild(confetti);
+        }
+    });
+</script>

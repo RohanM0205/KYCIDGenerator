@@ -1,0 +1,280 @@
+﻿@* @{
+    ViewData["Title"] = "Corporate KYC Already Exists";
+    var existingKycId = TempData["ExistingKYCId"]?.ToString();
+    var method = TempData["Method"]?.ToString();
+}
+
+<h2>A Corporate KYC record already exists for this @method</h2>
+<p>KYC ID: <strong>@existingKycId</strong></p>
+
+<form method="post" asp-action="UseExistingKyc">
+    <input type="hidden" name="kycId" value="@existingKycId" />
+    <button type="submit" class="btn btn-success">Use Existing KYC</button>
+</form>
+
+<form method="post" asp-action="AddCorporate">
+    <input type="hidden" name="overrideAction" value="createNew" />
+    <input type="hidden" name="model.PAN" value="@TempData["PAN"]" />
+    <input type="hidden" name="model.GST" value="@TempData["GST"]" />
+    <input type="hidden" name="model.Method" value="@method" />
+    <input type="hidden" name="model.Mobile" value="@TempData["Mobile"]" />
+    <button type="submit" class="btn btn-warning">Proceed to Create New</button>
+</form>
+ *@
+
+
+@{
+    ViewData["Title"] = "Corporate KYC Already Exists";
+    var existingKycId = TempData["ExistingKYCId"]?.ToString();
+    var method = TempData["Method"]?.ToString();
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f5f5f5;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f9f9f9;
+        background-image: radial-gradient(circle at 10% 20%, rgba(172, 12, 20, 0.03) 0%, rgba(172, 12, 20, 0.03) 90%);
+    }
+
+    .kyc-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
+        padding: 3rem 1rem;
+    }
+
+    .kyc-container {
+        max-width: 800px;
+        width: 100%;
+        position: relative;
+    }
+
+    .kyc-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+        .kyc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+    .kyc-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .kyc-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+    }
+
+    h2 {
+        color: var(--primary-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .info-text {
+        color: #666;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .kyc-id-display {
+        background-color: var(--light-gray);
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem;
+        margin: 2rem 0;
+        border-radius: 0 8px 8px 0;
+        font-family: monospace;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 50px;
+        padding: 15px 35px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .btn-warning {
+        background-color: var(--warning-color);
+        color: #212529;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .pulse-circle {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, var(--primary-light) 0%, rgba(172, 12, 20, 0) 70%);
+        border-radius: 50%;
+        opacity: 0.1;
+        z-index: -1;
+        animation: float 15s infinite alternate ease-in-out;
+    }
+
+        .pulse-circle:nth-child(1) {
+            top: -100px;
+            left: -100px;
+        }
+
+        .pulse-circle:nth-child(2) {
+            bottom: -50px;
+            right: -100px;
+            animation-delay: 2s;
+        }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(20px, 20px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .kyc-card
+
+    {
+        padding: 2rem 1.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>
+
+<div class="kyc-wrapper">
+    <div class="kyc-container">
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+
+        <div class="kyc-card">
+            <div class="kyc-header">
+                <div class="kyc-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Corporate KYC Record Already Exists</h2>
+                <p class="info-text">
+                    A Corporate KYC record already exists for this @method.
+                </p>
+
+                <div class="kyc-id-display">
+                    <i class="fas fa-building"></i>
+                    <span>Existing KYC ID: <strong>@existingKycId</strong></span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <form method="post" asp-action="UseExistingKyc">
+                    <input type="hidden" name="kycId" value="@existingKycId" />
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Use Existing KYC
+                    </button>
+                </form>
+
+                <form method="post" asp-action="AddCorporate">
+                    <input type="hidden" name="overrideAction" value="createNew" />
+                    <input type="hidden" name="model.PAN" value="@TempData["PAN"]" />
+                    <input type="hidden" name="model.GST" value="@TempData["GST"]" />
+                    <input type="hidden" name="model.Method" value="@method" />
+                    <input type="hidden" name="model.Mobile" value="@TempData["Mobile"]" />
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-plus-circle"></i> Proceed to Create New
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

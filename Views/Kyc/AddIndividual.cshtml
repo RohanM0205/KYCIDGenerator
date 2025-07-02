@@ -1,0 +1,350 @@
+﻿@model KYCIDGenerator.Models.IndividualKycViewModel
+
+@{
+    ViewData["Title"] = "Add New Individual KYC";
+}
+<!-- Full CSS and Layout Styling -->
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f5f5f5;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: var(--light-gray);
+        margin: 0;
+        padding: 0;
+    }
+
+    .container-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: calc(100vh - 100px);
+        margin-bottom: 65px;
+    }
+
+    .form-section {
+        flex: 1 1 100%;
+        padding: 3rem 2rem 5rem;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        max-width: 50%;
+    }
+
+    .form-body {
+        flex-grow: 1;
+        margin-bottom: 2rem;
+    }
+
+    .switch-method-section {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+        .switch-method-section h4 {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+    .btn-toggle-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+        .btn-toggle-group button {
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+            color: var(--primary-color);
+            transition: 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+            .btn-toggle-group button.active,
+            .btn-toggle-group button:hover {
+                background-color: var(--primary-color);
+                color: white;
+                transform: scale(1.05);
+            }
+
+    .form-control {
+        border-radius: 10px;
+        height: 45px;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .form-control:hover,
+        .form-control:focus {
+            box-shadow: 0 0 5px rgba(172, 12, 20, 0.5);
+        }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: 600;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    .illustration-section {
+        flex: 1;
+        background: linear-gradient(to bottom right, var(--primary-color), var(--primary-light));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+        padding-top: 2rem;
+        position: relative;
+    }
+
+        /* .illustration-section img.logo {
+            height: 80px;
+            margin-bottom: 2rem;
+        } */
+
+        .illustration-section img.illustration {
+            width: 80%;
+            max-width: 400px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .illustration-section img.logo {
+            height: 120px;
+            width: auto;
+            border-radius: 8px;
+            margin-bottom: 2rem; /* ✅ Adds vertical space between logo and illustration */
+            transition: transform 0.3s ease;
+        }
+
+            .illustration-section img.logo:hover {
+                transform: scale(1.05);
+            }
+
+    .disabled-captcha {
+        background-color: #e9ecef;
+        color: #6c757d;
+        pointer-events: none;
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .form-section, .illustration-section
+
+    {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .btn-toggle-group {
+        flex-direction: column;
+    }
+
+    }
+</style>
+
+<!-- Begin Layout -->
+<div class="container-wrapper">
+    <div class="form-section">
+        <div class="form-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="Method" value="@Model.Method" />
+                <input type="hidden" name="isMethodSwitch" id="isMethodSwitch" value="false" />
+                <input type="hidden" id="clearUpload" name="clearUpload" value="false" />
+
+                <div class="switch-method-section">
+                    <h4>Fetch KYC Details Using</h4>
+                    <div class="btn-toggle-group" role="group">
+                        <button type="submit" class="@(Model.Method == "PAN" ? "active" : "")" onclick="switchMethod('PAN')">
+                            <i class="fas fa-id-card"></i> PAN
+                        </button>
+                        <button type="submit" class="@(Model.Method == "Adhaar" ? "active" : "")" onclick="switchMethod('Adhaar')">
+                            <i class="fas fa-address-card"></i> Aadhaar
+                        </button>
+                        <button type="submit" class="@(Model.Method == "Manual" ? "active" : "")" onclick="switchMethod('Manual')">
+                            <i class="fas fa-edit"></i> Manual
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    function switchMethod(method) {
+                        document.querySelector('input[name="Method"]').value = method;
+                        document.getElementById("isMethodSwitch").value = "true";
+                    }
+                </script>
+
+                @if (Model.Method == "PAN")
+                {
+                    <div class="mb-3">
+                        <label>PAN Number</label>
+                        <input asp-for="PAN" class="form-control" />
+                    </div>
+                }
+                else if (Model.Method == "Adhaar")
+                {
+                    <div class="mb-3">
+                        <label>Aadhaar Number</label>
+                        <input asp-for="Adhaar" class="form-control" />
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3"><label>Name</label><input asp-for="Name" class="form-control" /></div>
+                    <div class="mb-3"><label>Date of Birth</label><input asp-for="DOB" class="form-control" type="date" /></div>
+                    <div class="mb-3"><label>Address 1</label><input asp-for="Address1" class="form-control" /></div>
+                    <div class="mb-3"><label>Address 2</label><input asp-for="Address2" class="form-control" /></div>
+                    <div class="mb-3"><label>City</label><input asp-for="City" class="form-control" /></div>
+                    <div class="mb-3"><label>State</label><input asp-for="State" class="form-control" /></div>
+                    <div class="mb-3"><label>Pin Code</label><input asp-for="PinCode" class="form-control" /></div>
+                    <div class="mb-3"><label>Email</label><input asp-for="Email" class="form-control" /></div>
+
+                    <div class="mb-3">
+                        <label>Select Document Type</label>
+                        <select asp-for="SelectedDocumentType" class="form-control" onchange="updateDocLabel()">
+                            <option value="PAN">PAN</option>
+                            <option value="ADHAAR">Aadhaar</option>
+                            <option value="LICENCE">Driving Licence</option>
+                            <option value="PASSPORT">Passport</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label id="docLabel">Enter Document Number</label>
+                        <input asp-for="DocumentNumber" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Upload Document</label>
+                        <input asp-for="UploadedDocument" type="file" accept=".pdf,.jpg,.jpeg,.png" class="form-control" onchange="previewFile(event)" />
+                    </div>
+
+                    <div class="mb-3" id="previewSection" style="display:none;">
+                        <p><strong>Preview:</strong></p>
+                        <div id="filePreview"></div>
+                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeFile()">Remove File</button>
+                    </div>
+
+                    <script>
+                        function updateDocLabel() {
+                            const selected = document.querySelector('[name="SelectedDocumentType"]').value;
+                            const label = {
+                                PAN: "Enter PAN Number",
+                                ADHAAR: "Enter Aadhaar Number",
+                                LICENCE: "Enter Driving Licence Number",
+                                PASSPORT: "Enter Passport Number"
+                            }[selected] || "Enter Document Number";
+
+                            document.getElementById('docLabel').innerText = label;
+                        }
+
+                        function previewFile(event) {
+                            const input = event.target;
+                            const preview = document.getElementById('filePreview');
+                            const section = document.getElementById('previewSection');
+
+                            if (!input.files || input.files.length === 0) {
+                                section.style.display = 'none';
+                                return;
+                            }
+
+                            const file = input.files[0];
+                            preview.innerHTML = "";
+                            section.style.display = "block";
+
+                            if (file.type.startsWith('image/')) {
+                                const img = document.createElement('img');
+                                img.src = URL.createObjectURL(file);
+                                img.style.maxWidth = "300px";
+                                preview.appendChild(img);
+                            } else {
+                                preview.textContent = file.name;
+                            }
+
+                            document.getElementById("clearUpload").value = "false";
+                        }
+
+                        function removeFile() {
+                            const input = document.querySelector('input[type="file"][name="UploadedDocument"]');
+                            input.value = '';
+                            document.getElementById('previewSection').style.display = 'none';
+                            document.getElementById("clearUpload").value = "true";
+                        }
+
+                        document.addEventListener("DOMContentLoaded", updateDocLabel);
+                    </script>
+                }
+
+                <div class="mb-3"><label>Mobile</label><input asp-for="Mobile" class="form-control" /></div>
+                <div class="mb-3"><label>Captcha</label><input asp-for="Captcha" class="form-control disabled-captcha" value="(Captcha temporarily disabled)" readonly /></div>
+
+                <div class="mb-3 form-check">
+                    <input asp-for="Consent" class="form-check-input" />
+                    <label class="form-check-label">I consent to use my information for KYC</label>
+                </div>
+
+                <br />
+                <br />
+                <br />
+
+                <!-- Submit Button -->
+                <div style="text-align:center; margin-top: auto;">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="illustration-section">
+        <img src="/images/Infiniota.png" class="logo" alt="Logo" />
+        <img src="/images/IndividualKYC.png" alt="Illustration" class="illustration" />
+    </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

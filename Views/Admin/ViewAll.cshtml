@@ -1,0 +1,385 @@
+﻿@model KYCIDGenerator.Models.KycListViewModel
+@{
+    ViewData["Title"] = "All KYC Records";
+}
+
+<style>
+    :root {
+        --primary-color: #AC0C14;
+        --primary-light: #d33a42;
+        --primary-dark: #7a0008;
+        --light-gray: #f5f5f5;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --dark-color: #343a40;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .header-icon {
+        color: var(--primary-color);
+        margin-right: 12px;
+        font-size: 1.8rem;
+        vertical-align: middle;
+    }
+
+    .kyc-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .header-content h2 {
+        color: var(--primary-dark);
+        font-weight: 700;
+        font-size: 2rem;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .bg-primary-light {
+        background-color: var(--primary-light);
+        color: white;
+        font-weight: 500;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .header-content p {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: 8px;
+        padding-left: 42px; /* Align with icon */
+    }
+
+    @@media (max-width: 768px) {
+        .header-content h2 {
+            font-size: 1.6rem;
+        }
+
+        .header-icon {
+            font-size: 1.4rem;
+            margin-right: 8px;
+        }
+    }
+
+
+
+    .filter-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+        .filter-buttons-container .btn {
+            min-width: 140px;
+            padding: 8px 20px;
+        }
+
+    .table-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            position: sticky;
+            top: 0;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+            .table tbody tr:hover {
+                background-color: rgba(172, 12, 20, 0.05);
+            }
+
+        .table tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .status-approved {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+    }
+
+    .status-pending {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: var(--warning-color);
+    }
+
+    .status-rejected {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .pagination .page-link {
+        color: var(--primary-color);
+    }
+
+    .form-control, .form-select {
+        border-radius: 6px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(172, 12, 20, 0.25);
+        }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .search-container {
+        position: relative;
+    }
+
+        .search-container input {
+            padding-left: 35px;
+        }
+
+    @@media (max-width: 1200px) {
+        .filter-card .row > div {
+            margin-bottom: 10px;
+        }
+
+        .filter-buttons-container {
+            margin-top: 1rem;
+        }
+
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Updated Header Section -->
+    <div class="kyc-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="header-content">
+                <h2 class="mb-1">
+                    <span class="header-icon">
+                        <i class="fas fa-id-card-alt"></i>
+                    </span>
+                    All KYC Records
+                    <span class="badge bg-primary-light ms-2">
+                        @Model.Records.Count() Records
+                    </span>
+                </h2>
+                <p class="text-muted mb-0">
+                    <i class="fas fa-info-circle"></i> View and manage all KYC submissions
+                </p>
+            </div>
+            <a class="btn btn-outline-primary" asp-action="Dashboard" asp-controller="Admin">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <form asp-action="ViewAll" method="get">
+            <div class="row g-3">
+                <div class="col-md-3 search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" name="searchQuery" value="@Model.SearchQuery"
+                           placeholder="Search by KYC ID or Name" class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <select name="CustomerTypeFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Types</option>
+                        <option value="Individual" selected="@(Model.CustomerTypeFilter == "Individual")">Individual</option>
+                        <option value="Corporate" selected="@(Model.CustomerTypeFilter == "Corporate")">Corporate</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="CreateTypeFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Methods</option>
+                        <option value="Auto" selected="@(Model.CreateTypeFilter == "Auto")">Auto</option>
+                        <option value="Manual" selected="@(Model.CreateTypeFilter == "Manual")">Manual</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="StatusFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="Approved" selected="@(Model.StatusFilter == "Approved")">Approved</option>
+                        <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Pending</option>
+                        <option value="Rejected" selected="@(Model.StatusFilter == "Rejected")">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="date" name="CreatedDateFilter" class="form-control"
+                           value="@(Model.CreatedDateFilter?.ToString("yyyy-MM-dd"))"
+                           onchange="this.form.submit()" placeholder="Created Date" />
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-buttons-container">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+                <a class="btn btn-secondary" href="@Url.Action("ViewAll", "Admin")">
+                    <i class="fas fa-times"></i> Clear All
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>KYC ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var kyc in Model.Records)
+                    {
+                        <tr>
+                            <td>@kyc.KYC_ID</td>
+                            <td>@kyc.Name</td>
+                            <td>@kyc.CustomerType</td>
+                            <td>@(kyc.CreateType ?? "N/A")</td>
+                            <td>
+                                <span class="status-badge @($"status-{kyc.KYC_Status?.ToLower()}")">
+                                    @kyc.KYC_Status
+                                </span>
+                            </td>
+                            <td>@kyc.CreatedDate.ToString("dd-MMM-yyyy")</td>
+                            <td>@(kyc.StatusModifiedDate?.ToString("dd-MMM-yyyy") ?? "N/A")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="ViewAll" asp-route-page="@(Model.CurrentPage - 1)">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" asp-action="ViewAll" asp-route-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="ViewAll" asp-route-page="@(Model.CurrentPage + 1)">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

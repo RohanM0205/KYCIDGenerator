@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - KYCIDGenerator</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/KYCIDGenerator.styles.css" asp-append-version="true" />
+    <style>
+        .navbar {
+            background-color: #AC0C14 !important;
+        }
+
+            .navbar .nav-link, .navbar .navbar-brand {
+                color: white !important;
+            }
+
+                .navbar .nav-link:hover {
+                    color: #f2f2f2 !important;
+                }
+
+        .navbar-brand img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        footer.footer {
+            background-color: #f8f9fa;
+            line-height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center">
+
+@*                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+ *@
+                    <img src="~/images/infiniota.png" alt="Logo" />
+                    KYC - Generate, Verify, Validate
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                    <ul class="navbar-nav">
+                        @{
+                            var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                            var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+                            // Flags
+                            bool isOnAdminLogin = controller == "Admin" && action == "Login";
+                            bool isOnUserLogin = controller == "Auth" && action == "Login";
+                            bool isOnAdminOtp = controller == "Admin" && action == "VerifyOtp";
+                            bool isOnUserOtp = controller == "Auth" && action == "VerifyOtp";
+                            bool isPostLogin = !(isOnAdminLogin || isOnUserLogin || isOnAdminOtp || isOnUserOtp);
+                        }
+
+                        @* Show Admin Login if NOT on Admin login or Admin OTP *@
+                        @if (!isOnAdminLogin && !isOnAdminOtp && !isPostLogin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Login">Admin Login</a>
+                            </li>
+                        }
+
+                        @* Show User Login if NOT on User login or User OTP *@
+                        @if (!isOnUserLogin && !isOnUserOtp && !isPostLogin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">User Login</a>
+                            </li>
+                        }
+
+                        @* Show Logout ONLY if post-login *@
+                        @if (isPostLogin)
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
+
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer py-0">
+        <div class="container d-flex justify-content-center">
+            &copy; 2025 - KYCIDGenerator -
+            <a class="ms-1 text-white text-decoration-underline" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
