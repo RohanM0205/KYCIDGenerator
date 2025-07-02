@@ -86,3 +86,7 @@ This project is licensed under the MIT License.
 
 💬 Support or Feedback?
 If you face any issues or have feature requests, feel free to open an issue or contact the maintainer.
+
+## 📸 UI Snapshot 
+
+![image](https://github.com/user-attachments/assets/0a98abf3-5c3e-4c1a-8a76-011fae188377)
